@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Halo Pet Care | Clinical Precision for Your Pets</title>
+  <meta name="description" content="Halo Pet Care is the multi-pet clinical health OS. Track medications, vaccines, schedules, and share records instantly with your care team. Join the beta." />
+  <link rel="icon" type="image/png" href="favicon.png" />
+  
+  <meta property="og:title" content="Halo Pet Care | Clinical Precision for Your Pets" />
+  <meta property="og:description" content="The multi-pet clinical health OS. Track medications, vaccines, and share records with your care team." />
+  <meta property="og:type" content="website" />
+  
+  <!-- Fonts -->
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,500,700,400&f[]=satoshi@700,500,400&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet" />
+  
+  <!-- Config script -->
+  <script src="config.js"></script>
+
+  <style>
+    :root {
+      --canvas: #F8FAFB;
+      --surface: #FFFFFF;
+      --ink: #18202C;
+      --muted: #64748B;
+      --border: rgba(226,232,240,0.6);
+      --halo-primary: #4A8EB2;
+      --halo-teal-light: #76B9B3;
+      --glass: rgba(255,255,255,0.72);
+      
+      --font-display: 'Cabinet Grotesk', sans-serif;
+      --font-body: 'Satoshi', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background-color: var(--canvas);
+      color: var(--ink);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    /* Typography */
+    h1, h2, h3 {
+      font-family: var(--font-display);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .text-mono {
+      font-family: var(--font-mono);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    p {
+      color: var(--muted);
+      max-width: 65ch;
+      font-size: 1.125rem;
+      line-height: 1.6;
+    }
+
+    /* Layout Primitives */
+    .container {
+      width: 100%;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* Header Nav */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      padding: 1.5rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 100;
+      background: var(--glass);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: var(--halo-primary);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 800;
+      font-size: 1.2rem;
+    }
+    
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(74, 142, 178, 0.1);
+      color: var(--halo-primary);
+      padding: 0.35rem 0.75rem;
+      border-radius: 100px;
+      font-weight: 600;
+      font-size: 0.875rem;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--halo-primary);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    /* Hero Section (Asymmetric) */
+    .hero {
+      min-height: 100dvh;
+      display: grid;
+      grid-template-columns: 1fr;
+      align-items: center;
+      padding-top: 5rem;
+      position: relative;
+    }
+    
+    @media (min-width: 992px) {
+      .hero {
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 4rem;
+      }
+    }
+
+    .hero-content {
+      padding-right: 2rem;
+      z-index: 10;
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 5vw, 5.5rem);
+      margin-bottom: 1.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .waitlist-form {
+      margin-top: 3rem;
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 1.5rem;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 40px -15px rgba(0,0,0,0.05);
+      max-width: 540px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    select {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.75rem;
+      font-family: var(--font-body);
+      font-size: 1rem;
+      background: var(--canvas);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--halo-primary);
+      box-shadow: 0 0 0 3px rgba(74, 142, 178, 0.15);
+    }
+
+    .btn-primary {
+      background: var(--halo-primary);
+      color: white;
+      border: none;
+      padding: 1rem 1.5rem;
+      border-radius: 0.75rem;
+      font-family: var(--font-body);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      transition: transform 0.2s, background-color 0.2s, box-shadow 0.2s;
+      margin-top: 0.5rem;
+    }
+    .btn-primary:hover {
+      background: #397696;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px -10px var(--halo-primary);
+    }
+    
+    .social-proof {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+      font-size: 0.875rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .avatars {
+      display: flex;
+    }
+    .avatars div {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e2e8f0;
+      border: 2px solid var(--surface);
+      margin-left: -8px;
+    }
+    .avatars div:first-child { margin-left: 0; background: var(--halo-teal-light); }
+    .avatars div:nth-child(2) { background: #cbd5e1; }
+    .avatars div:nth-child(3) { background: #94a3b8; }
+
+    .hero-visual {
+      position: relative;
+      height: 100%;
+      min-height: 50vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .hero-image {
+      width: 100%;
+      max-width: 500px;
+      border-radius: 2rem;
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.15);
+      z-index: 10;
+    }
+    .phone-frame {
+      position: absolute;
+      bottom: -2rem;
+      right: 1rem;
+      width: 250px;
+      height: 520px;
+      background: #18202C;
+      border-radius: 2.5rem;
+      border: 8px solid #18202C;
+      box-shadow: 0 40px 80px -20px rgba(0,0,0,0.5), inset 0 0 0 2px #444;
+      z-index: 20;
+      overflow: hidden;
+      transform: rotate(-6deg);
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .phone-frame:hover {
+      transform: rotate(0deg) translateY(-10px) scale(1.02);
+      z-index: 30;
+    }
+    .phone-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top;
+      border-radius: 2rem;
+    }
+    .hero-fade {
+      position: absolute;
+      bottom: -4rem; left: -4rem; right: -4rem; height: 150px;
+      background: linear-gradient(to bottom, transparent, var(--canvas));
+      z-index: 25;
+      pointer-events: none;
+    }
+
+    /* Mesh Gradient BG */
+    .mesh-bg {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0.4;
+      background: 
+        radial-gradient(circle at 80% 20%, rgba(74, 142, 178, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 20% 80%, rgba(118, 185, 179, 0.1) 0%, transparent 40%);
+    }
+
+    /* Features Bento Grid */
+    .features {
+      padding: 8rem 0;
+      background: var(--canvas);
+    }
+    
+    .features-header {
+      margin-bottom: 5rem;
+      max-width: 600px;
+    }
+
+    /* Carousel Layout */
+    .carousel-container {
+      width: 100%;
+      overflow: hidden;
+      padding: 2rem 0;
+      /* Fade edges for a premium look */
+      mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+    }
+    .carousel-track {
+      display: flex;
+      gap: 1.5rem;
+      width: max-content;
+      animation: scroll 40s linear infinite;
+    }
+    .carousel-track:hover {
+      animation-play-state: paused;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(calc(-50% - 0.75rem)); }
+    }
+    .bento-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      width: 320px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .bento-card:hover {
+      transform: translateY(-8px);
+    }
+
+    .bento-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(800px circle at var(--x) var(--y), rgba(74, 142, 178, 0.06), transparent 40%);
+      opacity: 0;
+      transition: opacity 0.5s;
+      pointer-events: none;
+    }
+    .bento-card:hover::before {
+      opacity: 1;
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--canvas);
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--halo-primary);
+      border: 1px solid var(--border);
+    }
+
+    .card-icon svg {
+      width: 24px; height: 24px;
+    }
+
+    .bento-card h3 {
+      font-size: 1.5rem;
+    }
+    .bento-card p {
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    /* Footer / CTA CTA */
+    .bottom-cta {
+      padding: 6rem 0;
+      background: var(--ink);
+      color: white;
+      text-align: center;
+    }
+    
+    .bottom-cta h2 {
+      color: white;
+      margin-bottom: 1rem;
+      font-size: clamp(2.5rem, 4vw, 3.5rem);
+    }
+    .bottom-cta p {
+      color: #94a3b8;
+      margin: 0 auto 3rem;
+    }
+
+    footer {
+      padding: 3rem 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+      font-size: 0.875rem;
+      color: var(--muted);
+    }
+
+    /* Store Badges */
+    .store-badges {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-top: 3.5rem;
+      flex-wrap: wrap;
+    }
+    .store-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.75rem 1.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      color: #f8fafc;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+      position: relative;
+    }
+    .store-badge:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateY(-2px);
+    }
+    .store-badge-coming-soon {
+      position: absolute;
+      top: -12px;
+      right: -10px;
+      background: var(--halo-primary);
+      color: white;
+      font-size: 0.7rem;
+      font-weight: 800;
+      padding: 0.25rem 0.6rem;
+      border-radius: 100px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+    .store-badge svg {
+      width: 28px;
+      height: 28px;
+      fill: currentColor;
+    }
+    .store-badge-text {
+      text-align: left;
+    }
+    .store-badge-text span {
+      display: block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      opacity: 0.7;
+      margin-bottom: 0.1rem;
+    }
+    .store-badge-text strong {
+      display: block;
+      font-size: 1.25rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      line-height: 1;
+    }
+
+    /* Animations */
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(74, 142, 178, 0.4); }
+      70% { box-shadow: 0 0 0 6px rgba(74, 142, 178, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(74, 142, 178, 0); }
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Utility */
+    .error-msg { color: #e11d48; font-size: 0.875rem; display: none; margin-top: 0.5rem; }
+    .success-msg { color: #10b981; font-size: 0.875rem; display: none; margin-top: 0.5rem; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+  <div class="mesh-bg"></div>
+
+  <header>
+    <a href="#" class="logo-container">
+      <img src="favicon.png" alt="Halo Logo" style="width: 32px; height: 32px; border-radius: 8px;" />
+      Halo
+    </a>
+  </header>
+
+  <section class="hero container">
+    <div class="hero-content reveal" style="transition-delay: 100ms;">
+      <span class="text-mono" style="color: var(--halo-primary)">The clinical pet health OS</span>
+      <h1 class="hero-title">Pet health, tracked with clinical precision.</h1>
+      <p>Manage medications, vet records, and daily schedules for your entire household. Share securely with your care team.</p>
+
+      <div class="waitlist-form reveal" style="transition-delay: 200ms;">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Join the beta waitlist</h3>
+        <form id="hero-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="name">First Name</label>
+              <input type="text" id="name" required placeholder="Jane" />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" required placeholder="jane@example.com" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="pet">Pet Type</label>
+              <select id="pet" required>
+                <option value="dog">Dog</option>
+                <option value="cat">Cat</option>
+                <option value="bird">Bird</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="platform">Platform</label>
+              <select id="platform" required>
+                <option value="ios">iOS (iPhone)</option>
+                <option value="android">Android</option>
+              </select>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 1.25rem;">
+            <div style="display: flex; align-items: flex-start; gap: 0.5rem; margin-bottom: 0.75rem;">
+              <input type="checkbox" id="terms" required style="width: auto; margin-top: 4px;" />
+              <label for="terms" style="font-weight: 500; font-size: 0.85rem; line-height: 1.4; color: var(--muted); cursor: pointer;">
+                I agree to the <a href="#" style="color: var(--halo-primary); text-decoration: none;">Terms of Service</a> and <a href="#" style="color: var(--halo-primary); text-decoration: none;">Privacy Policy</a>.
+              </label>
+            </div>
+            <div style="display: flex; align-items: flex-start; gap: 0.5rem;">
+              <input type="checkbox" id="newsletter" checked style="width: auto; margin-top: 4px;" />
+              <label for="newsletter" style="font-weight: 500; font-size: 0.85rem; line-height: 1.4; color: var(--muted); cursor: pointer;">
+                I want to receive updates, tips, and future newsletters.
+              </label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" id="submit-btn">Request Access</button>
+          <div class="error-msg" id="form-error">Something went wrong. Please try again.</div>
+          <div class="success-msg" id="form-success">✓ You're on the list! We'll be in touch soon.</div>
+        </form>
+        
+        <div class="social-proof">
+          <div class="avatars">
+            <div></div><div></div><div></div>
+          </div>
+          <span>Join <strong id="counter">1,247</strong> owners on the waitlist</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="hero-visual reveal" style="transition-delay: 300ms;">
+      <img src="hero_mockup.png" alt="Halo Pet Care App Interface" class="hero-image" onerror="this.style.display='none'" />
+      <div class="hero-fade"></div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="features-header reveal container">
+      <h2 style="font-size: 2.5rem; margin-bottom: 1rem;">Complete visibility into your pet's health.</h2>
+      <p>Everything you need to manage complex clinical regimens and routine care, designed for clarity.</p>
+    </div>
+
+    <div class="carousel-container reveal">
+      <div class="carousel-track">
+        <!-- Card 1: AI Scanner -->
+        <div class="bento-card">
+          <div class="card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+          </div>
+          <h3>AI Pill Scanner</h3>
+          <p>Scan medication labels to instantly parse dosing instructions, frequency, and warnings into your schedule.</p>
+        </div>
+
+        <!-- Card 2: Emergency -->
+        <div class="bento-card">
+          <div class="card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+          </div>
+          <h3>Emergency Go-Bag</h3>
+          <p>One-tap clinical handover card with weight, allergies, and active meds ready for the ER vet.</p>
+        </div>
+
+        <!-- Card 3: Care Team -->
+        <div class="bento-card">
+          <div class="card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+          </div>
+          <h3>Shared Care Team</h3>
+          <p>Invite family members, dog walkers, and boarding staff. Everyone sees the same schedule, and activity is logged centrally so nothing is missed or double-dosed.</p>
+        </div>
+
+        <!-- Card 4: Clinical Schedule -->
+        <div class="bento-card">
+          <div class="card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          </div>
+          <h3>Clinical Schedule</h3>
+          <p>Precise adherence tracking with countdown timers for critical medications.</p>
+        </div>
+
+        <!-- Card 5: Analytics -->
+        <div class="bento-card">
+          <div class="card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+          </div>
+          <h3>Analytics & Reports</h3>
+          <p>Track adherence scores, weight trends, and activity over time. Export comprehensive PDF reports instantly for your next veterinary appointment.</p>
+        </div>
+
+        <!-- Card 6: Appointments & Vaccines -->
+        <div class="bento-card">
+          <div class="card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+          </div>
+          <h3>Vaccine Ledger</h3>
+          <p>A complete calendar of upcoming vet appointments and a secure ledger of past vaccinations.</p>
+        </div>
+
+        <!-- Card 7: Multi-Pet Household -->
+        <div class="bento-card">
+          <div class="card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+          </div>
+          <h3>Multi-Pet Household</h3>
+          <p>Manage dogs, cats, and birds from a single unified dashboard. No more switching accounts to see who needs their medication.</p>
+        </div>
+
+        <!-- Card 8: Walk Tracker -->
+        <div class="bento-card">
+          <div class="card-icon">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          </div>
+          <h3>Walk Tracker</h3>
+          <p>Log daily walks, track distance, and keep the care team updated on activity levels.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bottom-cta">
+    <div class="container reveal">
+      <h2>Beta spots are limited.</h2>
+      <p style="color: #94a3b8; font-size: 1.25rem;">Don't wait. Secure your place in the Halo Pet Care rollout today.</p>
+      <button class="btn-primary" style="max-width: 200px; display: block; margin: 0 auto;" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">Get Early Access</button>
+      
+      <div class="store-badges reveal" style="transition-delay: 200ms;">
+        <div class="store-badge">
+          <div class="store-badge-coming-soon">Coming Soon</div>
+          <svg viewBox="0 0 384 512"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg>
+          <div class="store-badge-text">
+            <span>Download on the</span>
+            <strong>App Store</strong>
+          </div>
+        </div>
+        
+        <div class="store-badge">
+          <div class="store-badge-coming-soon">Coming Soon</div>
+          <svg viewBox="0 0 512 512"><path d="M325.3 234.3L104.6 13l280.8 161.2-60.1 60.1zM47 0C34 6.8 25.3 19.2 25.3 35.3v441.3c0 16.1 8.7 28.5 21.7 35.3l256.6-256L47 0zm425.2 225.6l-58.9-34.1-65.7 64.5 65.7 64.5 60.1-34.1c18-14.3 18-46.5-1.2-60.8zM104.6 499l280.8-161.2-60.1-60.1L104.6 499z"/></svg>
+          <div class="store-badge-text">
+            <span>Get it on</span>
+            <strong>Google Play</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="container">
+    <p>&copy; 2026 Halo Pet Care. All rights reserved.</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script>
+    // --- Reveal on scroll ---
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    
+    const observer = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('active');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+      
+      // Counter animation
+      const counterEl = document.getElementById('counter');
+      let start = 1000;
+      const end = 1247;
+      const duration = 2000;
+      const startTime = performance.now();
+      
+      function updateCounter(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        // Easing out cubic
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(start + (end - start) * easeOut);
+        counterEl.textContent = current.toLocaleString();
+        
+        if (progress < 1) {
+          requestAnimationFrame(updateCounter);
+        }
+      }
+      setTimeout(() => requestAnimationFrame(updateCounter), 500);
+      
+      // Duplicate carousel track for infinite scroll
+      const track = document.querySelector('.carousel-track');
+      if (track) {
+        const clone = track.innerHTML;
+        track.innerHTML += clone;
+      }
+    });
+
+    // --- Spotlight border effect ---
+    document.querySelectorAll('.bento-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        card.style.setProperty('--x', `${x}px`);
+        card.style.setProperty('--y', `${y}px`);
+      });
+    });
+
+    // --- Form Submission logic via Supabase REST API ---
+    document.getElementById('hero-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const btn = document.getElementById('submit-btn');
+      const errEl = document.getElementById('form-error');
+      const succEl = document.getElementById('form-success');
+      
+      btn.textContent = 'Submitting...';
+      btn.disabled = true;
+      errEl.style.display = 'none';
+      succEl.style.display = 'none';
+      
+      const payload = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        pet_type: document.getElementById('pet').value,
+        platform: document.getElementById('platform').value,
+        agreed_to_terms: document.getElementById('terms').checked,
+        receive_newsletter: document.getElementById('newsletter').checked
+      };
+
+      try {
+        const { supabaseUrl, supabaseKey } = window.HALO_CONFIG;
+        if (!supabaseUrl || supabaseUrl === "YOUR_SUPABASE_URL_HERE") {
+          throw new Error("Supabase config missing.");
+        }
+
+        const res = await fetch(`${supabaseUrl}/rest/v1/waitlist`, {
+          method: 'POST',
+          headers: {
+            'apikey': supabaseKey,
+            'Authorization': `Bearer ${supabaseKey}`,
+            'Content-Type': 'application/json',
+            'Prefer': 'return=minimal'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          if (errorData.code === '23505') { // unique violation
+            throw new Error("This email is already on the waitlist.");
+          }
+          throw new Error("Failed to submit.");
+        }
+
+        // Success
+        document.getElementById('hero-form').reset();
+        succEl.style.display = 'block';
+        btn.textContent = 'Request Access';
+        btn.disabled = false;
+        
+      } catch (err) {
+        console.error(err);
+        errEl.textContent = err.message || "Something went wrong.";
+        errEl.style.display = 'block';
+        btn.textContent = 'Request Access';
+        btn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
