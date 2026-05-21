@@ -11,6 +11,19 @@
   <meta property="og:description" content="The multi-pet clinical health OS. Track medications, vaccines, and share records with your care team." />
   <meta property="og:type" content="website" />
   
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://api.fontshare.com; font-src 'self' https://api.fontshare.com; img-src 'self' data:; connect-src 'self' https://*.supabase.co;">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Halo Pet Care",
+    "operatingSystem": "Web, iOS, Android",
+    "applicationCategory": "HealthApplication",
+    "description": "Multi-pet clinical health OS for tracking medications, vaccines, and vet appointments."
+  }
+  </script>
+  
   <!-- Fonts -->
   <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,500,700,400&f[]=satoshi@700,500,400&f[]=jetbrains-mono@400,500&display=swap" rel="stylesheet" />
   
@@ -537,11 +550,11 @@
           <div class="form-row">
             <div class="form-group">
               <label for="name">First Name</label>
-              <input type="text" id="name" required placeholder="Jane" />
+              <input type="text" id="name" required placeholder="Jane" maxlength="50" pattern="[A-Za-z \-]+" title="Letters, spaces, and hyphens only" />
             </div>
             <div class="form-group">
               <label for="email">Email</label>
-              <input type="email" id="email" required placeholder="jane@example.com" />
+              <input type="email" id="email" required placeholder="jane@example.com" maxlength="100" />
             </div>
           </div>
           <div class="form-row">
@@ -787,11 +800,16 @@
       errEl.style.display = 'none';
       succEl.style.display = 'none';
       
+      const sanitizeText = (str) => {
+        if (!str) return '';
+        return str.replace(/[^\w\s@.-]/gi, '');
+      };
+
       const payload = {
-        name: document.getElementById('name').value,
-        email: document.getElementById('email').value,
-        pet_type: document.getElementById('pet').value,
-        platform: document.getElementById('platform').value,
+        name: sanitizeText(document.getElementById('name').value),
+        email: sanitizeText(document.getElementById('email').value),
+        pet_type: sanitizeText(document.getElementById('pet').value),
+        platform: sanitizeText(document.getElementById('platform').value),
         agreed_to_terms: document.getElementById('terms').checked,
         receive_newsletter: document.getElementById('newsletter').checked
       };
