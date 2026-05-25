@@ -242,30 +242,7 @@
       box-shadow: 0 10px 20px -10px var(--halo-primary);
     }
     
-    .social-proof {
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-      margin-top: 1.5rem;
-      font-size: 0.875rem;
-      color: var(--muted);
-      font-weight: 500;
-    }
 
-    .avatars {
-      display: flex;
-    }
-    .avatars div {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: #e2e8f0;
-      border: 2px solid var(--surface);
-      margin-left: -8px;
-    }
-    .avatars div:first-child { margin-left: 0; background: var(--halo-teal-light); }
-    .avatars div:nth-child(2) { background: #cbd5e1; }
-    .avatars div:nth-child(3) { background: #94a3b8; }
 
     .hero-visual {
       position: relative;
@@ -596,12 +573,7 @@
           <div class="success-msg" id="form-success">✓ You're on the list! We'll be in touch soon.</div>
         </form>
         
-        <div class="social-proof">
-          <div class="avatars">
-            <div></div><div></div><div></div>
-          </div>
-          <span>Join <strong id="counter">1,247</strong> owners on the waitlist</span>
-        </div>
+
       </div>
     </div>
     
@@ -747,26 +719,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
       
-      // Counter animation
-      const counterEl = document.getElementById('counter');
-      let start = 1000;
-      const end = 1247;
-      const duration = 2000;
-      const startTime = performance.now();
-      
-      function updateCounter(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        // Easing out cubic
-        const easeOut = 1 - Math.pow(1 - progress, 3);
-        const current = Math.floor(start + (end - start) * easeOut);
-        counterEl.textContent = current.toLocaleString();
-        
-        if (progress < 1) {
-          requestAnimationFrame(updateCounter);
-        }
-      }
-      setTimeout(() => requestAnimationFrame(updateCounter), 500);
+
       
       // Duplicate carousel track for infinite scroll
       const track = document.querySelector('.carousel-track');
